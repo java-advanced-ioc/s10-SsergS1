@@ -14,7 +14,7 @@ import java.util.*;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private ToDoService toDoService;
+    private final ToDoService toDoService;
 
     private final Map<ToDo, List<Task>> tasksByToDo = new HashMap<>();
 
@@ -28,8 +28,10 @@ public class TaskServiceImpl implements TaskService {
             return null;
         }
         List<Task> list = tasksByToDo.computeIfAbsent(todo, t -> new ArrayList<>());
-        if (list.contains(task)) {
-            return null;
+        for (Task existingTask : list) {
+            if (existingTask.getName().equalsIgnoreCase(task.getName())) {
+                return null;
+            }
         }
         list.add(task);
         return task;
@@ -84,11 +86,13 @@ public class TaskServiceImpl implements TaskService {
 
     public Task getByUserName(User user, String name) {
         if (user == null || name == null) return null;
-        List<ToDo> userTodos = toDoService != null ? toDoService.getByUser(user) : Collections.emptyList();
-        if (userTodos == null) return null;
-        for (ToDo todo : userTodos) {
-            Task t = getByToDoName(todo, name);
-            if (t != null) return t;
+        for (Map.Entry<ToDo, List<Task>> entry : tasksByToDo.entrySet()) {
+            ToDo todo = entry.getKey();
+            if (todo.getOwner() != null && todo.getOwner().equals(user)) {
+                for (Task t : entry.getValue()) {
+                    if (name.equals(t.getName())) return t;
+                }
+            }
         }
         return null;
     }

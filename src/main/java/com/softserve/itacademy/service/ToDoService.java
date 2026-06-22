@@ -18,5 +18,4 @@ public interface ToDoService {
     List<ToDo> getByUser(User user);
 
     ToDo getByUserTitle(User user, String title);
-    
 }

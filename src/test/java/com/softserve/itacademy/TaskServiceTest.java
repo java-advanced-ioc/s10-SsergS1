@@ -7,6 +7,7 @@ import com.softserve.itacademy.model.User;
 import com.softserve.itacademy.service.TaskService;
 import com.softserve.itacademy.service.impl.TaskServiceImpl;
 import com.softserve.itacademy.service.impl.ToDoServiceImpl;
+import com.softserve.itacademy.service.impl.UserServiceImpl;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.junit.jupiter.api.*;
 
@@ -27,6 +28,7 @@ class TaskServiceTest {
         // register the services under test
         context.register(TaskServiceImpl.class);
         context.register(ToDoServiceImpl.class);
+        context.register(UserServiceImpl.class);
         context.refresh();
         taskService = context.getBean(TaskService.class);
     }
@@ -191,6 +193,10 @@ class TaskServiceTest {
         User u2 = user("u2@example.com");
         ToDo t1 = new ToDo();
         ToDo t2 = new ToDo();
+        t1.setOwner(u1);
+        t2.setOwner(u1);
+        u1.getMyTodos().add(t1);
+        u1.getMyTodos().add(t2);
         Task a = new Task("Alpha", Priority.LOW);
         Task b = new Task("Beta", Priority.MEDIUM);
         taskService.addTask(a, t1);
